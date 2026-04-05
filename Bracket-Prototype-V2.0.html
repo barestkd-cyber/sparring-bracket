@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=3.0, user-scalable=yes">
+<title>IMAS Sparring Bracket</title>
+<style>
+/* ── IMAS THEME VARIABLES ── */
+:root {
+  --bg:      #0d1e30;
+  --bg2:     #142840;
+  --bg3:     #0a1828;
+  --border:  #1e3a5e;
+  --border2: #142840;
+  --accent:  #cc1a1a;
+  --accent2: #e02020;
+  --text:    #e2e8f0;
+  --muted:   #6b8aaa;
+  --dim:     #3a5070;
+  --card:    #b8c8d8;
+  --hd:      #0d1828;
+  --hd-text: #8aaac8;
+  --card-text:#0d1e35;
+  --card-muted:#4a6888;
+  --school-tag:#5a7898;
+  --slot-border: #98aaba;
+  --input-bg:#1a3050;
+  --input-text:#e2e8f0;
+  --won-bg:  rgba(26,106,56,0.18);
+  --won-clr: #1a6a38;
+  --lost-clr:#1e3550;
+  --chip-done-bg:#0f2a12; --chip-done-bd:#2a5a30; --chip-done-clr:#4aee88;
+  --chip-soon-bg:#1a2a10; --chip-soon-bd:#f0b429; --chip-soon-clr:#c8daf0;
+  --chip-later-bg:#132030; --chip-later-bd:#2a4060; --chip-later-clr:#7aaace;
+}
+body.light {
+  --bg:      #ffffff;
+  --bg2:     #1e3a5e;
+  --bg3:     #162d4a;
+  --border:  #0f2035;
+  --border2: #1a3050;
+  --accent:  #cc1a1a;
+  --accent2: #aa1010;
+  --text:    #0d1e35;
+  --muted:   #2a4a6a;
+  --dim:     #1a3050;
+  --card:    #b8c8d8;
+  --hd:      #0d1828;
+  --hd-text: #8aaac8;
+  --card-text:#0d1e35;
+  --card-muted:#4a6888;
+  --school-tag:#5a7898;
+  --slot-border: #98aaba;
+  --input-bg:#a8bfd4;
+  --input-text:#0d1e35;
+  --won-bg:  rgba(26,106,56,0.18);
+  --won-clr: #1a6a38;
+  --lost-clr:#1e3550;
+  --chip-done-bg:#0a1a0c; --chip-done-bd:#1e3a22; --chip-done-clr:#4aee88;
+  --chip-soon-bg:#0d1825; --chip-soon-bd:#f0b429; --chip-soon-clr:#8aaac8;
+  --chip-later-bg:#0d1825; --chip-later-bd:#182840; --chip-later-clr:#8aaac8;
+}
+
+* { box-sizing:border-box; margin:0; padding:0; }
+html, body { height:100%; }
+body { background:var(--bg); color:var(--text); font-family:system-ui,sans-serif; padding:12px; transition:background 0.2s,color 0.2s; }
+#setup-outer { min-height:100vh; display:flex; align-items:flex-start; justify-content:center; padding-top:12vh; padding-left:12px; padding-right:12px; padding-bottom:16px; }
+
+/* HEADER */
+#site-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; flex-wrap:wrap; gap:8px; }
+#site-header img { height:44px; object-fit:contain; }
+body.light #site-header img { background:#0d1828; border-radius:6px; padding:4px 8px; }
+.btn-theme { background:var(--bg2); border:1px solid var(--border); color:var(--muted);
+  padding:5px 10px; border-radius:6px; font-size:12px; cursor:pointer; font-weight:600; }
+.btn-theme:hover { border-color:var(--accent); color:var(--accent); }
+
+h1 { font-size:18px; color:var(--accent); letter-spacing:1px; margin-bottom:2px; }
+.subtitle { font-size:11px; color:#8aaac8; font-family:monospace; margin-bottom:12px; letter-spacing:1px; }
+body.light .subtitle { color:#2a4a6a; }
+h2 { font-size:11px; font-family:monospace; letter-spacing:2px; text-transform:uppercase;
+     color:var(--muted); margin:6px 0 4px; border-bottom:1px solid var(--border2); padding-bottom:3px; }
+h2.w { color:var(--accent); } h2.l { color:#60a5fa; }
+
+/* SETUP LOGO WATERMARK — dark mode only */
+#setup-watermark { position:fixed; top:50%; left:calc(50% - 2px); transform:translate(-50%,-50%);
+  width:720px; height:720px; max-width:96vw; max-height:96vw;
+  background:url('https://raw.githubusercontent.com/barestkd-cyber/sparring-bracket/main/IMAS-Logo-noBG.png') center/contain no-repeat;
+  opacity:0.16; pointer-events:none; z-index:0; }
+/* In light mode: replace logo with patch */
+body.light #setup-watermark {
+  background:url('https://raw.githubusercontent.com/barestkd-cyber/sparring-bracket/main/IMAS-Patch.png') center/contain no-repeat;
+  opacity:0.13; width:900px; height:900px; }
+/* Patch watermark on bracket screen */
+#patch-watermark { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:900px; height:900px; max-width:96vw; max-height:96vw;
+  background:url('https://raw.githubusercontent.com/barestkd-cyber/sparring-bracket/main/IMAS-Patch.png') center/contain no-repeat;
+  opacity:0.09; pointer-events:none; z-index:0; }
+body.light #patch-watermark { opacity:0.13; width:900px; height:900px; }
+/* Light mode button text fixes */
+body.light .btn-s { color:#d0e4f8; }
+body.light .btn-theme { color:#d0e4f8; }
+body.light .qb { color:#d0e4f8; }
+body.light .qb.active { color:#fff; }
+/* Forms mode button light mode — no bg when inactive, red when active */
+body.light #forms-toggle-btn { background:transparent; border-color:#6b8aaa; color:#0d1e35; }
+body.light #forms-toggle-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+body.light #forms-toggle-btn { background:transparent; border-color:#4a6888; color:#0d1e35; font-weight:600; }
+body.light #forms-toggle-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:700; }
+body.light .qb-random { background:rgba(56,161,105,0.25); border-color:#3a8a4a; color:#c8f0d0; }
+#setup { position:relative; z-index:1; max-width:520px; margin:0 auto; }
+.quick-btns { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; align-items:center; }
+@media (min-width:501px) {
+  .quick-btns { flex-wrap:nowrap; }
+  #forms-toggle-btn { min-width:105px; white-space:nowrap; }
+  .qb-random { min-width:110px; white-space:nowrap; }
+}
+.qb { padding:5px 13px; background:var(--bg2); border:1px solid var(--border); color:var(--text);
+      border-radius:6px; cursor:pointer; font-size:13px; text-align:center; line-height:1; }
+.qb:hover { border-color:var(--accent); color:var(--accent); }
+.qb.active { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:700; }
+.qb-random { padding:5px 13px; background:rgba(56,161,105,0.08); border:1px solid #2a6a3a;
+             color:#68d391; border-radius:6px; cursor:pointer; font-size:13px; font-weight:700; text-align:center; line-height:1; }
+.qb-random:hover { border-color:#68d391; background:rgba(56,161,105,0.15); }
+.comp-row { display:flex; align-items:center; gap:4px; margin-bottom:5px; }
+.comp-num { font-family:monospace; font-size:11px; color:var(--accent); width:14px; flex-shrink:0; text-align:right; }
+.comp-row input { flex:1; background:var(--input-bg); border:1px solid var(--border); color:var(--input-text);
+                  border-radius:6px; padding:7px 10px; font-size:13px; min-width:0; }
+.comp-row input:focus { outline:none; border-color:var(--accent); }
+.comp-school { flex:0 0 130px !important; font-size:11px !important; color:var(--muted) !important; }
+.sbtn { width:28px; height:28px; background:transparent; border:1px solid var(--border);
+        color:var(--muted); border-radius:5px; cursor:pointer; font-size:12px; flex-shrink:0; }
+.sbtn.scratched { border-color:#e53e3e; color:#e53e3e; background:rgba(229,62,62,0.08); }
+.comp-row.scratched input { text-decoration:line-through; color:var(--dim); }
+.btn-go { background:var(--accent); border:none; color:#fff; padding:10px 22px;
+          border-radius:7px; font-size:14px; font-weight:700; cursor:pointer; margin-top:10px; }
+.btn-go:hover { background:var(--accent2); }
+.school-tag { font-size:9px; color:var(--school-tag); font-family:monospace; margin-left:5px;
+              white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex-shrink:1; }
+.forms-mode .comp-num { color:var(--accent); }
+@media (max-width:500px) {
+  .comp-school { flex:0 0 80px !important; font-size:10px !important; }
+  #site-header img { height:34px; }
+}
+
+/* BRACKET DISPLAY */
+#bd { display:none; position:relative; }
+/* Patch watermark */
+#patch-watermark { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:900px; height:900px; max-width:96vw; max-height:96vw;
+  background:url('https://raw.githubusercontent.com/barestkd-cyber/sparring-bracket/main/IMAS-Patch.png') center/contain no-repeat;
+  opacity:0.09; pointer-events:none; z-index:0; }
+
+#ctrl { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px; align-items:center; position:relative; z-index:1; }
+.btn-s { background:var(--bg2); border:1px solid var(--border); color:var(--text);
+         padding:6px 13px; border-radius:6px; font-size:12px; cursor:pointer; font-weight:600; }
+.btn-s:hover { border-color:var(--muted); }
+.btn-d { background:rgba(229,62,62,0.15); border:1px solid #e53e3e; color:#e53e3e;
+         padding:6px 13px; border-radius:6px; font-size:12px; cursor:pointer; font-weight:600; }
+.btn-d:hover { background:rgba(229,62,62,0.25); }
+#ctrl .btn-judge { background:rgba(124,58,237,0.18); }
+
+/* SEQUENCE BAR — no background, chips float */
+#seq-bar { background:transparent; border:none; border-radius:0;
+           padding:4px 0; margin-bottom:6px; overflow-x:auto; position:relative; z-index:1; }
+#seq-bar-inner { display:flex; gap:6px; align-items:center; flex-wrap:nowrap; min-width:max-content; }
+.seq-chip { padding:4px 10px; border-radius:5px; font-family:monospace; font-size:11px;
+            font-weight:700; letter-spacing:1px; border:1px solid transparent; white-space:nowrap; }
+.seq-chip.done  { background:var(--chip-done-bg); border-color:var(--chip-done-bd); color:var(--chip-done-clr); text-decoration:line-through; }
+.seq-chip.next  { background:var(--accent); color:#fff; border-color:var(--accent); font-size:12px; }
+.seq-chip.soon  { background:var(--chip-soon-bg); border-color:var(--chip-soon-bd); color:var(--chip-soon-clr); }
+.seq-chip.later { background:var(--chip-later-bg); border-color:var(--chip-later-bd); color:var(--chip-later-clr); }
+.seq-sep { color:var(--dim); font-size:14px; }
+body.light #always-hint { font-weight:700; color:#2a4a6a; }
+body.light #forms-hint { color:#2a4a6a; }
+/* Dark mode - solid filled ctrl buttons same as light mode */
+#ctrl .btn-judge { background:#7c3aed; color:#fff; border-color:#7c3aed; }
+#ctrl .btn-judge:hover { background:#6d28d9; }
+#ctrl .btn-d { background:#cc1a1a; color:#fff; border-color:#cc1a1a; }
+#ctrl .btn-d:hover { background:#aa1010; }
+body.light .qb-random { background:rgba(30,120,60,0.85); border-color:#1a8a40; color:#ffffff; font-weight:700; }
+body.light .qb-random:hover { background:rgba(30,140,70,0.95); }
+body.light .comp-school { color:#0d1e35 !important; }
+body.light .btn-d { background:#cc1a1a; color:#ffffff; border-color:#cc1a1a; }
+body.light .btn-d:hover { background:#aa1010; }
+body.light h2.l { color:#0d1828; }
+body.light .subtitle { color:#2a4a6a; }
+
+/* PLACEMENTS */
+#placements { display:flex; flex-direction:column; gap:5px; margin-bottom:8px; max-width:320px; position:relative; z-index:1; }
+.pc { padding:6px 14px; border-radius:7px; font-size:13px; font-weight:600; }
+.pc.p1 { background:rgba(204,26,26,0.10); border:1px solid var(--accent); color:var(--accent); }
+.pc.p2 { background:rgba(156,163,175,0.08); border:1px solid #9ca3af; color:#9ca3af; }
+.pc.p3 { background:rgba(180,83,9,0.08); border:1px solid #b45309; color:#d97706; }
+
+/* BRACKET TREE */
+.bscroll { overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:4px; margin-bottom:0; position:relative; z-index:1; }
+.binner  { position:relative; margin:0 auto; }
+
+/* MATCH CARD */
+.mc { position:absolute; width:180px; background:var(--card);
+      border:2px solid var(--border); border-radius:8px; overflow:hidden; }
+.mc.bye   { border-color:var(--border2); opacity:0.72; }
+.mc.done  { border-color:#2d4a30; }
+.mc.ready { border-color:#2a4a20; }
+.mc.next  { border-color:#ff2020; border-width:3px; box-shadow:0 0 20px rgba(255,32,32,0.4); }
+.mc.wf    { border-color:#8a6010; }
+.mc.lf    { border-color:#1a4a80; }
+.mc.next.lf { border-color:#60a5fa; box-shadow:0 0 20px rgba(96,165,250,0.25); }
+
+.mc-hd { padding:4px 8px; background:var(--hd); display:flex; justify-content:space-between;
+         align-items:center; font-family:monospace; font-size:10px; }
+.mc-id { font-weight:800; font-size:13px; color:var(--hd-text); }
+.mc.bye  .mc-id { color:var(--hd-text); opacity:0.6; }
+.mc.done .mc-id { color:#3a6a42; }
+.mc.ready .mc-id { color:#5a8a32; }
+.mc.next  .mc-id { color:var(--accent); }
+.mc-lbl { color:var(--hd-text); letter-spacing:1px; text-transform:uppercase; font-size:9px; opacity:0.8; }
+.mc.wf .mc-lbl { color:#c09020; opacity:1; }
+.mc.lf .mc-lbl { color:#4090c0; opacity:1; }
+
+.mc-slot { padding:0 10px; height:32px; display:flex; align-items:center;
+           font-size:12px; font-weight:600; border-top:1px solid var(--slot-border); color:var(--card-text); }
+.mc-slot.click { cursor:pointer; }
+.mc-slot.click:hover  { background:rgba(204,26,26,0.08); }
+.mc-slot.click:active { background:rgba(204,26,26,0.16); }
+.mc-slot.won  { color:var(--won-clr); font-weight:700; background:var(--won-bg); }
+.mc-slot.lost { color:var(--lost-clr); text-decoration:line-through; }
+.mc-slot.tbd  { color:var(--card-muted); font-style:italic; font-size:11px; opacity:0.7; }
+.mc-slot.bye-s{ color:var(--card-muted); font-size:11px; font-style:italic; opacity:0.7; }
+
+/* WINNER ENTRY MODAL */
+#winner-modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75);
+  z-index:1000; align-items:center; justify-content:center; padding:20px; }
+#winner-modal-bg.open { display:flex; }
+#winner-modal { background:#ffffff; border:2px solid var(--accent); border-radius:12px;
+  padding:20px; width:100%; max-width:340px; box-shadow:0 0 40px rgba(204,26,26,0.2); }
+#winner-modal h3 { font-family:monospace; font-size:11px; letter-spacing:2px; text-transform:uppercase;
+  color:var(--accent); margin-bottom:6px; }
+#winner-modal .vs-line { font-size:13px; color:#2a4a6a; margin-bottom:14px; line-height:1.6; }
+#winner-modal .vs-line strong { color:#0d1e35; }
+#winner-modal .hint { font-family:monospace; font-size:10px; color:#4a6888; margin-bottom:8px; letter-spacing:0.5px; }
+#winner-entry-input { width:100%; background:#f0f4f8; border:1px solid var(--accent); color:#0d1e35;
+  border-radius:7px; padding:11px 14px; font-size:15px; -webkit-appearance:none; margin-bottom:6px; }
+#winner-entry-input:focus { outline:none; border-color:var(--accent2); }
+#winner-entry-error { display:none; color:#e53e3e; font-size:11px; font-family:monospace; margin-bottom:10px; line-height:1.4; }
+#winner-modal .modal-btns { display:flex; gap:8px; margin-top:10px; }
+#winner-confirm-btn { flex:1; background:#38a169; border:none; border-radius:7px; padding:11px 0;
+  font-family:monospace; font-size:12px; font-weight:700; color:#fff; cursor:pointer;
+  letter-spacing:1px; -webkit-appearance:none; touch-action:manipulation; }
+#winner-confirm-btn:active { background:#2d8a56; }
+#winner-cancel-btn { background:transparent; border:1px solid #b0c0d0; border-radius:7px; padding:11px 16px;
+  font-family:monospace; font-size:12px; color:#4a6888; cursor:pointer;
+  -webkit-appearance:none; touch-action:manipulation; }
+
+/* CONFIRM MODAL */
+#confirm-modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8);
+  z-index:2000; align-items:center; justify-content:center; padding:20px; }
+#confirm-modal-bg.open { display:flex; }
+#confirm-modal { background:#ffffff; border:2px solid #e53e3e; border-radius:12px;
+  padding:20px; width:100%; max-width:320px; }
+#confirm-modal p { font-size:13px; color:#0d1e35; margin-bottom:16px; line-height:1.5; }
+#confirm-modal .modal-btns { display:flex; gap:8px; }
+#confirm-yes { flex:1; background:#e53e3e; border:none; border-radius:7px; padding:11px 0;
+  font-family:monospace; font-size:12px; font-weight:700; color:#fff; cursor:pointer; }
+#confirm-no  { background:transparent; border:1px solid #b0c0d0; border-radius:7px;
+  padding:11px 16px; font-family:monospace; font-size:12px; color:#4a6888; cursor:pointer; }
+
+/* JUDGE PASSWORD MODAL */
+#judge-modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8);
+  z-index:2000; align-items:center; justify-content:center; padding:20px; }
+#judge-modal-bg.open { display:flex; }
+#judge-modal { background:var(--bg2); border:2px solid #7c3aed; border-radius:12px;
+  padding:20px; width:100%; max-width:320px; box-shadow:0 0 40px rgba(124,58,237,0.25); }
+#judge-modal h3 { font-family:monospace; font-size:11px; letter-spacing:2px;
+  text-transform:uppercase; color:#a78bfa; margin-bottom:6px; }
+#judge-pw-input { width:100%; background:var(--bg); border:1px solid #7c3aed; color:var(--text);
+  border-radius:7px; padding:11px 14px; font-size:15px; margin-bottom:6px; -webkit-appearance:none; }
+#judge-pw-input:focus { outline:none; }
+#judge-pw-error { display:none; color:#e53e3e; font-size:11px; font-family:monospace; margin-bottom:8px; }
+#judge-modal .modal-btns { display:flex; gap:8px; margin-top:4px; }
+#judge-enter-btn { flex:1; background:#7c3aed; border:none; border-radius:7px; padding:11px 0;
+  font-family:monospace; font-size:12px; font-weight:700; color:#fff; cursor:pointer; }
+#judge-cancel-btn { background:transparent; border:1px solid var(--border); border-radius:7px;
+  padding:11px 16px; font-family:monospace; font-size:12px; color:var(--muted); cursor:pointer; }
+
+/* JUDGE BANNER */
+#judge-banner { display:none; background:rgba(124,58,237,0.08); border:1px solid #7c3aed; border-radius:8px;
+  padding:8px 14px; margin-bottom:12px; align-items:center; gap:10px; flex-wrap:wrap; position:relative; z-index:1; }
+#judge-banner.active { display:flex; }
+.judge-banner-txt { font-family:monospace; font-size:11px; color:#a78bfa; letter-spacing:1px; flex:1; }
+.btn-judge { background:transparent; border:1px solid #7c3aed; color:#a78bfa;
+  padding:6px 13px; border-radius:6px; font-size:12px; cursor:pointer; }
+.btn-judge:hover { background:rgba(124,58,237,0.15); }
+.btn-lock { background:#7c3aed; border:1px solid #7c3aed; color:#fff;
+  padding:6px 13px; border-radius:6px; font-size:12px; cursor:pointer; font-weight:700; }
+.btn-lock:hover { background:#6d28d9; }
+.mc-slot.judge-tap { cursor:pointer; }
+.mc-slot.judge-tap:hover { background:rgba(124,58,237,0.1); }
+.mc-slot.judge-sel { background:rgba(124,58,237,0.25) !important;
+  border-left:3px solid #a78bfa !important; color:var(--text) !important; }
+
+/* DQ */
+.dq-badge { font-size:8px; color:#e53e3e; font-family:monospace; font-weight:800;
+  margin-left:4px; background:rgba(229,62,62,0.12); border:1px solid #e53e3e;
+  border-radius:3px; padding:1px 4px; flex-shrink:0; letter-spacing:0.5px; }
+.mc-slot.dq-slot { text-decoration:line-through; color:#7a3030 !important; }
+.judge-acts { display:flex; gap:3px; margin-left:auto; flex-shrink:0; }
+.jbtn { font-size:8px; padding:2px 5px; border-radius:3px; cursor:pointer;
+  font-family:monospace; font-weight:800; border:1px solid;
+  -webkit-appearance:none; touch-action:manipulation; }
+.jbtn-dq  { color:#e53e3e; border-color:#e53e3e; background:rgba(229,62,62,0.08); }
+.jbtn-dq:active  { background:rgba(229,62,62,0.3); }
+.jbtn-clr { color:var(--muted); border-color:var(--border); background:transparent; }
+.jbtn-clr:active { background:rgba(107,114,128,0.2); }
+</style>
+</head>
+<body>
+
+<!-- RESET PASSWORD MODAL -->
+<div id="reset-modal-bg" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:2000;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--bg2);border:2px solid #e53e3e;border-radius:12px;padding:20px;width:100%;max-width:320px;box-shadow:0 0 40px rgba(229,62,62,0.25);">
+    <h3 style="font-family:monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#e53e3e;margin-bottom:6px;">↺ Reset Bracket</h3>
+    <p style="font-family:monospace;font-size:10px;color:#e53e3e;margin-bottom:10px;line-height:1.5;">Password is <strong style="color:#ff6060;">cJudge</strong> — prototype demo only</p>
+    <input id="reset-pw-input" type="password" placeholder="Password..." autocomplete="off"
+      style="width:100%;background:var(--bg);border:1px solid #e53e3e;color:var(--text);border-radius:7px;padding:11px 14px;font-size:15px;margin-bottom:6px;-webkit-appearance:none;">
+    <div id="reset-pw-error" style="display:none;color:#e53e3e;font-size:11px;font-family:monospace;margin-bottom:8px;">Incorrect password.</div>
+    <div style="display:flex;gap:8px;margin-top:4px;">
+      <button onclick="confirmResetPassword()" style="flex:1;background:#e53e3e;border:none;border-radius:7px;padding:11px 0;font-family:monospace;font-size:12px;font-weight:700;color:#fff;cursor:pointer;">ENTER</button>
+      <button onclick="cancelResetModal()" style="background:transparent;border:1px solid var(--border);border-radius:7px;padding:11px 16px;font-family:monospace;font-size:12px;color:var(--muted);cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div id="confirm-modal-bg">
+  <div id="confirm-modal">
+    <p id="confirm-msg">Are you sure?</p>
+    <div class="modal-btns">
+      <button id="confirm-yes" onclick="confirmYes()">Yes, proceed</button>
+      <button id="confirm-no"  onclick="confirmNo()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- JUDGE PASSWORD MODAL -->
+<div id="judge-modal-bg">
+  <div id="judge-modal">
+    <h3>⚖ Center Judge Access</h3>
+    <p style="font-family:monospace;font-size:10px;color:#7c5aed;margin-bottom:10px;line-height:1.5;">Password is <strong style="color:#a78bfa;">cJudge</strong> — prototype demo only</p>
+    <input id="judge-pw-input" type="password" placeholder="Password..." autocomplete="off">
+    <div id="judge-pw-error">Incorrect password.</div>
+    <div class="modal-btns">
+      <button id="judge-enter-btn"  onclick="confirmJudgePassword()">ENTER</button>
+      <button id="judge-cancel-btn" onclick="cancelJudgeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- WINNER ENTRY MODAL -->
+<div id="winner-modal-bg">
+  <div id="winner-modal">
+    <h3 id="winner-modal-title">Enter Winner</h3>
+    <div class="vs-line" id="winner-modal-vs"></div>
+    <div class="hint" id="winner-modal-hint"></div>
+    <input id="winner-entry-input" type="text" placeholder="Type name..."
+      autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false">
+    <div id="winner-entry-error"></div>
+    <div class="modal-btns">
+      <button id="winner-confirm-btn" onclick="confirmWinnerEntry()">✓ CONFIRM</button>
+      <button id="winner-cancel-btn" onclick="cancelWinnerEntry()">✕ Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETUP -->
+<div id="setup-watermark"></div>
+<div id="setup-outer">
+<div id="setup">
+  <div id="site-header">
+    <img src="https://raw.githubusercontent.com/barestkd-cyber/sparring-bracket/main/IMAS-Logo-noBG.png" alt="Innovative Martial Arts Systems">
+    <button class="btn-theme" onclick="toggleTheme()" id="theme-btn">Light Mode</button>
+  </div>
+  <h1>Sparring Bracket</h1>
+  <div class="subtitle">IMAS — INTERLEAVED DOUBLE ELIMINATION</div>
+  <div class="quick-btns">
+    <span style="font-size:11px;color:#8aaac8;font-family:monospace;">SLOTS →</span>
+    <button class="qb qb-size" onclick="setSize(4)">4</button>
+    <button class="qb qb-size" onclick="setSize(5)">5</button>
+    <button class="qb qb-size active" onclick="setSize(6)">6</button>
+    <button class="qb qb-size" onclick="setSize(7)">7</button>
+    <button class="qb qb-size" onclick="setSize(8)">8</button>
+    <span style="color:#2d3139;font-size:16px;">|</span>
+    <button class="qb-random" id="random-fill-btn" onclick="randomFill()">Random Fill</button>
+    <span style="color:#2d3139;font-size:16px;">|</span>
+    <button class="qb" id="forms-toggle-btn" onclick="toggleFormsMode()" style="font-size:11px;letter-spacing:0.5px;">Forms Mode: Off</button>
+  </div>
+  <div id="always-hint" style="font-family:monospace;font-size:10px;margin-bottom:4px;line-height:1.6;color:#6b8aaa;">
+    Seeding priority: R1 same-school avoidance, then random placement.
+  </div>
+  <div id="forms-hint" style="display:none;font-family:monospace;font-size:10px;margin-bottom:8px;line-height:1.6;color:#6b8aaa;">
+    Forms Mode: enter competitors by forms placement. Seeding priority: lowest scores receive the byes, then R1 same-school avoidance, then random placement.
+  </div>
+  <div id="comp-list"></div>
+  <button class="btn-go" id="go-btn" onclick="handleGo()">Generate Bracket →</button>
+</div>
+</div>
+
+<!-- BRACKET -->
+<div id="bd">
+  <div id="patch-watermark"></div>
+  <div id="ctrl">
+    <button class="btn-s" onclick="showSetup()">← Back</button>
+    <button class="btn-judge" onclick="openJudgeModal()">⚖ Center Judge</button>
+    <button class="btn-d" onclick="confirmReset()">↺ Reset</button>
+    <button class="btn-theme" onclick="toggleTheme()" id="theme-btn-bd" style="margin-left:auto;">Light Mode</button>
+  </div>
+  <div id="judge-banner">
+    <span class="judge-banner-txt">⚖ CENTER JUDGE MODE — tap a slot to select, tap another to swap</span>
+    <button class="btn-judge" onclick="judgeUndoAll()" style="margin-right:4px;">↩ Undo All</button>
+    <button class="btn-lock" onclick="exitJudgeModePrompt()">🔒 Lock & Exit</button>
+  </div>
+
+  <div id="seq-bar"><div id="seq-bar-inner"></div></div>
+  <div id="placements"></div>
+
+  <h2 class="w">🏆 Winners Bracket</h2>
+  <div class="bscroll"><div id="wb" class="binner"></div></div>
+
+  <h2 class="l" id="lb-head">⬇ Losers Bracket</h2>
+  <div class="bscroll"><div id="lb" class="binner"></div></div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// BRACKET TEMPLATES — explicit per competitor count
+// recSeq = recommended interleaved run order (byes excluded)
+// ════════════════════════════════════════════════════════
+const T = {
+
+  2: {
+    matches: {
+      A:{br:'W',lbl:'Final',seeds:[1,2],isWF:true}
+    },
+    wCols:[['A']], lCols:[],
+    recSeq:['A']
+  },
+
+  3: {
+    matches: {
+      A:{br:'W',lbl:'R1',  seeds:[1,null],isBye:true,bySeed:1},
+      B:{br:'W',lbl:'R1',  seeds:[2,3]},
+      C:{br:'W',lbl:'W Final',ff:{t:'winner:A',b:'winner:B'},isWF:true},
+      D:{br:'L',lbl:'LB Final',ff:{t:'loser:B',b:'loser:C'},isLF:true}
+    },
+    wCols:[['A','B'],['C']], lCols:[['D']],
+    recSeq:['B','C','D']
+  },
+
+  4: {
+    // A(1v4) B(2v3) → C(LB: L(A)vL(B)), D(WF: W(A)vW(B)), E(LBF: W(C)vL(D))
+    // Interleave: A,B → C ready AND D ready → play C(LB) before D(W Final)
+    matches: {
+      A:{br:'W',lbl:'R1',  seeds:[1,4]},
+      B:{br:'W',lbl:'R1',  seeds:[2,3]},
+      C:{br:'L',lbl:'LB R1',   ff:{t:'loser:A',  b:'loser:B'}},
+      D:{br:'W',lbl:'W Final', ff:{t:'winner:A',b:'winner:B'},isWF:true},
+      E:{br:'L',lbl:'LB Final',ff:{t:'winner:C',b:'loser:D'},isLF:true}
+    },
+    wCols:[['A','B'],['D']], lCols:[['C'],['E']],
+    recSeq:['A','B','C','D','E']
+  },
+
+  5: {
+    // 8-slot 3 byes: A(1vBYE),C(2vBYE),D(3vBYE) auto. Only B(4v5) is real R1.
+    // After B: E(W Semi: W(A)vW(B)) ready, F auto (C,D byes)
+    // After E: H(LB R1: L(B)vL(E)) ready — play H before G
+    // After H: I(LB R2: L(F)vW(H)) ready — F already done
+    // After I: G(W Final: W(E)vW(F)) — play G
+    // After G: J(LB Final: W(I)vL(G))
+    matches: {
+      A:{br:'W',lbl:'R1',    seeds:[1,null],isBye:true,bySeed:1},
+      B:{br:'W',lbl:'R1',    seeds:[4,5]},
+      C:{br:'W',lbl:'R1',    seeds:[2,null],isBye:true,bySeed:2},
+      D:{br:'W',lbl:'R1',    seeds:[3,null],isBye:true,bySeed:3},
+      E:{br:'W',lbl:'W Semi',ff:{t:'winner:A',b:'winner:B'}},
+      F:{br:'W',lbl:'W Semi',ff:{t:'winner:C',b:'winner:D'}},
+      G:{br:'W',lbl:'W Final',ff:{t:'winner:E',b:'winner:F'},isWF:true},
+      H:{br:'L',lbl:'LB R1', ff:{t:'loser:B', b:'loser:E'}},
+      I:{br:'L',lbl:'LB R2', ff:{t:'winner:H', b:'loser:F'}},
+      J:{br:'L',lbl:'LB Final',ff:{t:'winner:I',b:'loser:G'},isLF:true}
+    },
+    wCols:[['A','B','C','D'],['E','F'],['G']],
+    lCols:[['H'],['I'],['J']],
+    recSeq:['B','E','H','I','G','J']
+  },
+
+  6: {
+    // 8-slot 2 byes: A(1vBYE),C(2vBYE) auto. Real R1: B(4v5), D(3v6).
+    // B,D → H(LB: L(B)vL(D)), E(W Semi: W(A)vW(B)), F(W Semi: W(C)vW(D)) all ready
+    // Play H(LB) before advancing too far in W
+    // H done → I(LB R2: W(H)vL(E)) needs E. Play E → I ready.
+    // I done → J(LB R3: L(F)vW(I)) needs F. Play F → J ready. G(WF) also ready.
+    // Play J, then G, then K(LBF: W(J)vL(G))
+    matches: {
+      A:{br:'W',lbl:'R1',    seeds:[1,null],isBye:true,bySeed:1},
+      B:{br:'W',lbl:'R1',    seeds:[4,5]},
+      C:{br:'W',lbl:'R1',    seeds:[2,null],isBye:true,bySeed:2},
+      D:{br:'W',lbl:'R1',    seeds:[3,6]},
+      E:{br:'W',lbl:'W Semi',ff:{t:'winner:A',b:'winner:B'}},
+      F:{br:'W',lbl:'W Semi',ff:{t:'winner:C',b:'winner:D'}},
+      G:{br:'W',lbl:'W Final',ff:{t:'winner:E',b:'winner:F'},isWF:true},
+      H:{br:'L',lbl:'LB R1', ff:{t:'loser:B', b:'loser:D'}},
+      I:{br:'L',lbl:'LB R2', ff:{t:'winner:H',b:'loser:E'}},
+      J:{br:'L',lbl:'LB R3', ff:{t:'winner:I', b:'loser:F'}},
+      K:{br:'L',lbl:'LB Final',ff:{t:'winner:J',b:'loser:G'},isLF:true}
+    },
+    wCols:[['A','B','C','D'],['E','F'],['G']],
+    lCols:[['H'],['I'],['J'],['K']],
+    recSeq:['B','D','H','E','I','F','J','G','K']
+  },
+
+  7: {
+    // 8-slot 1 bye: A(1vBYE) auto. Real R1: B(4v5),C(2v7),D(3v6).
+    // After B,C,D: H(LB R1: L(C)vL(D)) ready, E(WSemi: W(A)vW(B)) ready, F(WSemi: W(C)vW(D)) ready
+    // Play H → I(LB R2: L(B)vW(H)) needs B done ✓ → I ready after H
+    // Play E → J(LB R3: L(E)vW(I)) needs I done
+    // Play I → J ready (E+I done)
+    // Play F → K(LB R4: L(F)vW(J)) needs J done
+    // Play J → K ready
+    // Play K → L(LBF: W(K)vL(G)) needs G done
+    // Play G(WF: W(E)vW(F)) → L ready
+    // Play L → done
+    matches: {
+      A:{br:'W',lbl:'R1',    seeds:[1,null],isBye:true,bySeed:1},
+      B:{br:'W',lbl:'R1',    seeds:[4,5]},
+      C:{br:'W',lbl:'R1',    seeds:[2,7]},
+      D:{br:'W',lbl:'R1',    seeds:[3,6]},
+      E:{br:'W',lbl:'W Semi',ff:{t:'winner:A',b:'winner:B'}},
+      F:{br:'W',lbl:'W Semi',ff:{t:'winner:C',b:'winner:D'}},
+      G:{br:'W',lbl:'W Final',ff:{t:'winner:E',b:'winner:F'},isWF:true},
+      H:{br:'L',lbl:'LB R1', ff:{t:'loser:C', b:'loser:D'}},
+      I:{br:'L',lbl:'LB R2', ff:{t:'winner:H', b:'loser:B'}},
+      J:{br:'L',lbl:'LB R3', ff:{t:'winner:I', b:'loser:E'}},
+      K:{br:'L',lbl:'LB R4', ff:{t:'winner:J', b:'loser:F'}},
+      L:{br:'L',lbl:'LB Final',ff:{t:'winner:K',b:'loser:G'},isLF:true}
+    },
+    wCols:[['A','B','C','D'],['E','F'],['G']],
+    lCols:[['H'],['I'],['J'],['K'],['L']],
+    recSeq:['B','C','D','H','E','I','F','J','K','G','L']
+  },
+
+  8: {
+    // Full 8 no byes.
+    // A,B,C,D all R1 → H(LB:L(A)vL(B)), I(LB:L(C)vL(D)), E(WSemi), F(WSemi) all ready
+    // Interleave: play LB R1 (H,I) alongside W Semis (E,F), then LB R2 (J,K), LB Semi (L), WF (G), LBF (M)
+    matches: {
+      A:{br:'W',lbl:'R1',    seeds:[1,8]},
+      B:{br:'W',lbl:'R1',    seeds:[4,5]},
+      C:{br:'W',lbl:'R1',    seeds:[2,7]},
+      D:{br:'W',lbl:'R1',    seeds:[3,6]},
+      E:{br:'W',lbl:'W Semi',ff:{t:'winner:A',b:'winner:B'}},
+      F:{br:'W',lbl:'W Semi',ff:{t:'winner:C',b:'winner:D'}},
+      G:{br:'W',lbl:'W Final',ff:{t:'winner:E',b:'winner:F'},isWF:true},
+      H:{br:'L',lbl:'LB R1', ff:{t:'loser:A', b:'loser:B'}},
+      I:{br:'L',lbl:'LB R1', ff:{t:'loser:C', b:'loser:D'}},
+      J:{br:'L',lbl:'LB R2', ff:{t:'winner:H',b:'loser:E'}},
+      K:{br:'L',lbl:'LB R2', ff:{t:'winner:I',b:'loser:F'}},
+      L:{br:'L',lbl:'LB Semi',ff:{t:'winner:J',b:'winner:K'}},
+      M:{br:'L',lbl:'LB Final',ff:{t:'winner:L',b:'loser:G'},isLF:true}
+    },
+    wCols:[['A','B','C','D'],['E','F'],['G']],
+    lCols:[['H','I'],['J','K'],['L'],['M']],
+    recSeq:['A','B','C','D','H','I','E','F','J','K','L','G','M']
+  }
+};
+
+// ════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════
+let S = { n:0, names:[], schools:[], competitors:[], matches:{}, history:[], activeEntry:null, activeWinner:null };
+let bracketGenerated = false;
+let judgeMode = false;
+let judgeSelected = null; // { matchId, which }
+let dqdNames = new Set();
+let confirmCallback = null;
+
+// ════════════════════════════════════════════════════════
+// ENGINE
+// ════════════════════════════════════════════════════════
+function initMatches(n, names) {
+  const tmpl = T[n];
+  const out  = {};
+  Object.entries(tmpl.matches).forEach(([id, def]) => {
+    const m = {
+      id, br:def.br||'W', lbl:def.lbl,
+      isBye:!!def.isBye, isWF:!!def.isWF, isLF:!!def.isLF,
+      ff:def.ff||null,
+      top:null, bottom:null, winner:null, loser:null, done:false
+    };
+    if (def.seeds) {
+      m.top    = def.seeds[0] != null ? names[def.seeds[0]-1] : null;
+      m.bottom = def.seeds[1] != null ? names[def.seeds[1]-1] : null;
+    }
+    if (def.isBye) { m.top = names[def.bySeed-1]; m.bottom = null; }
+    out[id] = m;
+  });
+  return out;
+}
+
+function propagate(id, matches) {
+  const src = matches[id];
+  Object.values(matches).forEach(m => {
+    if (!m.ff) return;
+    ['t','b'].forEach((slot, si) => {
+      const spec = m.ff[slot];
+      if (!spec) return;
+      const [type, srcId] = spec.split(':');
+      if (srcId !== id) return;
+      if (type === 'loser' && src.isBye) return; // byes produce no loser
+      const val = type === 'winner' ? src.winner : src.loser;
+      if (val == null) return;
+      if (si === 0) m.top = val; else m.bottom = val;
+    });
+  });
+}
+
+function autoAdvanceByes(matches) {
+  let changed = true;
+  while (changed) {
+    changed = false;
+    Object.values(matches).forEach(m => {
+      if (m.isBye && !m.done && m.top) {
+        m.winner = m.top; m.loser = null; m.done = true;
+        propagate(m.id, matches);
+        changed = true;
+      }
+    });
+  }
+}
+
+function isPlayable(m) {
+  return !m.done && !m.isBye && !!m.top && !!m.bottom;
+}
+
+function selectWinner(matchId, winner) {
+  const m = S.matches[matchId];
+  if (!m || !isPlayable(m)) return;
+  S.history.push(JSON.parse(JSON.stringify(S.matches)));
+  m.winner = winner;
+  m.loser  = winner === m.top ? m.bottom : m.top;
+  m.done   = true;
+  propagate(matchId, S.matches);
+  render();
+}
+
+// ════════════════════════════════════════════════════════
+// DISPLAY LABELS — map internal IDs to human match letters
+// Only real (non-bye) matches get a visible letter A, B, C...
+// Internal IDs are unchanged and still used for all logic.
+// ════════════════════════════════════════════════════════
+function getDisplayLabels() {
+  const tmpl = T[S.n];
+  const ms   = S.matches;
+  const dlabels = {}; // internalId → display letter e.g. 'A','B'...
+  let letterCode = 65; // 'A'
+
+  // Assign letters in recSeq order to real matches only
+  tmpl.recSeq.forEach(id => {
+    const m = ms[id];
+    if (!m || m.isBye) return;
+    dlabels[id] = String.fromCharCode(letterCode++);
+  });
+  return dlabels;
+}
+
+// ════════════════════════════════════════════════════════
+// SCHEDULING — sequence status per match
+// ════════════════════════════════════════════════════════
+function getSeqStatus() {
+  const seq = T[S.n].recSeq;
+  const st  = {};
+  let nextFound = false;
+  let soonCount = 0;
+
+  seq.forEach(id => {
+    const m = S.matches[id];
+    if (!m) return;
+    if (m.done) {
+      st[id] = 'done';
+    } else if (!nextFound && isPlayable(m)) {
+      st[id] = 'next';
+      nextFound = true;
+    } else if (nextFound && soonCount < 3) {
+      st[id] = 'soon';
+      soonCount++;
+    } else {
+      st[id] = 'later';
+    }
+  });
+  return st;
+}
+
+// ════════════════════════════════════════════════════════
+// LAYOUT
+// ════════════════════════════════════════════════════════
+const CW=180, CH=84, CG=52, CT=CW+CG, RS=CH+12;
+
+function wPositions(cols) {
+  const pos={};
+  cols.forEach((col,ci)=>{
+    const x=ci*CT;
+    const vSp=Math.pow(2,ci)*RS;
+    const sY=(Math.pow(2,ci)-1)*RS/2;
+    col.forEach((id,ri)=>{ pos[id]=mkPos(x, sY+ri*vSp); });
+  });
+  return pos;
+}
+
+function lPositions(cols) {
+  const pos={};
+  const maxN=cols.reduce((m,c)=>Math.max(m,c.length),0);
+  const maxH=maxN===1?CH:(maxN*RS-(RS-CH));
+  cols.forEach((col,ci)=>{
+    const x=ci*CT;
+    const colH=col.length===1?CH:(col.length*RS-(RS-CH));
+    const sY=(maxH-colH)/2;
+    col.forEach((id,ri)=>{ pos[id]=mkPos(x, sY+ri*RS); });
+  });
+  return pos;
+}
+
+function mkPos(x,y){
+  return {
+    x,y,
+    cx:x+CW/2, cy:y+CH/2,
+    rx:x+CW,   lx:x,
+    topY:   y+20+16,
+    botY:   y+20+1+32+16
+  };
+}
+
+// ════════════════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════════════════
+function render(){
+  const tmpl=T[S.n], ms=S.matches, st=getSeqStatus();
+  const dl=getDisplayLabels(); // display label map: internalId → 'A','B'...
+
+  // Placements
+  const pel=document.getElementById('placements');
+  pel.innerHTML='';
+  const wf=Object.values(ms).find(m=>m.isWF&&m.done);
+  const lf=Object.values(ms).find(m=>m.isLF&&m.done);
+  if(wf){
+    const sc=schoolOf(wf.winner);
+    pel.innerHTML+=`<div class="pc p1">🥇 1st — ${wf.winner}${sc?` <span style="font-size:10px;font-family:monospace;opacity:0.7;">(${sc})</span>`:''}`;
+  }
+  if(lf){
+    const sc2=schoolOf(lf.winner), sc3=schoolOf(lf.loser);
+    pel.innerHTML+=`<div class="pc p2">🥈 2nd — ${lf.winner}${sc2?` <span style="font-size:10px;font-family:monospace;opacity:0.7;">(${sc2})</span>`:''}</div>`;
+    pel.innerHTML+=`<div class="pc p3">🥉 3rd — ${lf.loser}${sc3?` <span style="font-size:10px;font-family:monospace;opacity:0.7;">(${sc3})</span>`:''}</div>`;
+  }
+
+  // Build placement medal map for use in slot rendering
+  S.placementMedals = {};
+  if(wf) S.placementMedals[wf.winner] = '🥇';
+  if(lf){ S.placementMedals[lf.winner] = '🥈'; S.placementMedals[lf.loser] = '🥉'; }
+
+  // Sequence bar — only show real matches, use display label
+  const sbi=document.getElementById('seq-bar-inner');
+  sbi.innerHTML='';
+  const realSeq = tmpl.recSeq.filter(id => ms[id] && !ms[id].isBye);
+  realSeq.forEach((id,i)=>{
+    const m=ms[id];
+    const s=st[id]||'later';
+    const ltr=dl[id]||'?';
+    if(i>0){
+      const sep=document.createElement('span');
+      sep.className='seq-sep'; sep.textContent='›';
+      sbi.appendChild(sep);
+    }
+    const chip=document.createElement('span');
+    chip.className=`seq-chip ${s}`;
+    chip.textContent=`${ltr}${s==='done'?' ✓':''} (${m.br==='L'?'LB':'W'})`;
+    sbi.appendChild(chip);
+  });
+
+  // Next label — use display label
+  const nextId=tmpl.recSeq.find(id=>st[id]==='next');
+  const nextDL=nextId ? dl[nextId] : null;
+  const nlEl = document.getElementById('next-label');
+  if(nlEl) nlEl.textContent = nextDL ? `▶ Next: Match ${nextDL}` : (wf&&lf)?'✓ Complete':'';
+
+  // LB heading — use display label for W Final
+  const wfId=Object.keys(tmpl.matches).find(k=>tmpl.matches[k].isWF);
+  const wfDL=wfId ? (dl[wfId]||wfId) : '?';
+  document.getElementById('lb-head').textContent = '⬇ Losers Bracket';
+
+  // Brackets — pass dl through
+  renderSection(document.getElementById('wb'),tmpl.wCols,ms,wPositions(tmpl.wCols),st,dl);
+  const lEl=document.getElementById('lb');
+  if(!tmpl.lCols.length){
+    lEl.innerHTML='<p style="color:#3a3f4a;font-size:12px;padding:8px">No losers bracket for this size.</p>';
+    return;
+  }
+  renderSection(lEl,tmpl.lCols,ms,lPositions(tmpl.lCols),st,dl);
+}
+
+function renderSection(container,cols,ms,pos,st,dl){
+  const allIds=cols.flat();
+  let maxX=0,maxY=0;
+  allIds.forEach(id=>{
+    const p=pos[id];
+    if(p){maxX=Math.max(maxX,p.x+CW);maxY=Math.max(maxY,p.y+CH);}
+  });
+  const W=maxX+20,H=maxY+24;
+  container.innerHTML='';
+  container.style.cssText=`position:relative;width:${W}px;height:${H}px;`;
+
+  // SVG
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('width',W);svg.setAttribute('height',H);
+  svg.style.cssText='position:absolute;top:0;left:0;pointer-events:none;overflow:visible;';
+  container.appendChild(svg);
+
+  const colOf={};
+  cols.forEach((col,ci)=>col.forEach(id=>colOf[id]=ci));
+
+  // Connectors
+  allIds.forEach(id=>{
+    const m=ms[id]; const p=pos[id];
+    if(!m?.ff||!p) return;
+    const clr='#3a5878';
+
+    ['t','b'].forEach((slot,si)=>{
+      const spec=m.ff[slot];
+      if(!spec) return;
+      const [type,srcId]=spec.split(':');
+      const sp=pos[srcId];
+      if(!sp) return;
+
+      const srcM=ms[srcId];
+      let srcY=sp.cy;
+      if(srcM?.done){
+        if(type==='winner') srcY=srcM.winner===srcM.top?sp.topY:sp.botY;
+        else srcY=srcM.loser===srcM.top?sp.topY:sp.botY;
+      }
+
+      const destY=si===0?p.topY:p.botY;
+      const samePrevCol=colOf[srcId]!==undefined && colOf[id]!==undefined &&
+                        colOf[srcId]===colOf[id]-1;
+      const partnerSlot=si===0?m.ff.b:m.ff.t;
+      const partnerId=partnerSlot?partnerSlot.split(':')[1]:null;
+      const partnerInSameCol=partnerId && colOf[partnerId]===colOf[srcId];
+
+      if(samePrevCol && partnerInSameCol){
+        // Bracket shape — both sources in same previous column
+        const midX=sp.rx+CG/2;
+        line(svg,sp.rx,srcY,midX,srcY,clr);
+        // vertical from srcY to midpoint of both slots
+        const psp=pos[partnerId];
+        if(psp){
+          let pSrcY=psp.cy;
+          if(ms[partnerId]?.done){
+            const type2=(si===0?m.ff.b:m.ff.t).split(':')[0];
+            const pm=ms[partnerId];
+            if(type2==='winner') pSrcY=pm.winner===pm.top?psp.topY:psp.botY;
+            else pSrcY=pm.loser===pm.top?psp.topY:psp.botY;
+          }
+          line(svg,psp.rx,pSrcY,midX,pSrcY,clr);
+          line(svg,midX,srcY,midX,pSrcY,clr);
+          line(svg,midX,p.cy,p.lx,p.cy,clr);
+        }
+      } else {
+        // Individual routed line
+        const midX=sp.rx+CG/2;
+        line(svg,sp.rx,srcY,midX,srcY,clr);
+        line(svg,midX,srcY,midX,destY,clr);
+        line(svg,midX,destY,p.lx,destY,clr);
+      }
+    });
+  });
+
+  // Cards
+  allIds.forEach(id=>{
+    const m=ms[id]; const p=pos[id];
+    if(!m||!p) return;
+    const s=st[id]; const playable=isPlayable(m); const isNext=s==='next';
+
+    const card=document.createElement('div');
+    card.className='mc';
+    if(m.isBye) card.classList.add('bye');
+    else if(m.done) card.classList.add('done');
+    else if(isNext) card.classList.add('next');
+    else if(playable) card.classList.add('ready');
+    if(m.isWF) card.classList.add('wf');
+    if(m.isLF) card.classList.add('lf');
+    card.style.left=p.x+'px'; card.style.top=p.y+'px';
+
+    const hd=document.createElement('div');
+    hd.className='mc-hd';
+    const dispLtr = m.isBye ? '' : (dl[id] || id);
+    hd.innerHTML=`<span class="mc-id">${dispLtr}</span><span class="mc-lbl">${m.lbl}</span>`;
+    if(isNext){
+      const nextTag=document.createElement('span');
+      nextTag.style.cssText='font-family:monospace;font-size:9px;font-weight:800;color:#e53e3e;letter-spacing:1px;';
+      nextTag.textContent='NEXT';
+      hd.appendChild(nextTag);
+    }
+    card.appendChild(hd);
+
+    card.appendChild(mkSlot(m,'top',isNext,dl));
+    const dv=document.createElement('div');
+    dv.style.cssText='height:1px;background:#1a1d24;';
+    card.appendChild(dv);
+    card.appendChild(mkSlot(m,'bottom',isNext,dl));
+
+    container.appendChild(card);
+  });
+}
+
+function schoolOf(name) {
+  if (!name || !S.competitors) return '';
+  const c = S.competitors.find(c => c.name === name);
+  return c ? c.school : '';
+}
+
+function mkSlot(m,which,isNext,dl){
+  const name=which==='top'?m.top:m.bottom;
+  const ff=m.ff?(which==='top'?m.ff.t:m.ff.b):null;
+  const div=document.createElement('div');
+  div.className='mc-slot';
+  const isDQ = name && dqdNames.has(name);
+  const isSel = judgeMode && judgeSelected &&
+    judgeSelected.matchId===m.id && judgeSelected.which===which;
+
+  // isFirstRound = seeded match (no ff) — school tag always shows here
+  const isFirstRound = !m.ff;
+
+  function nameNode(n, showSchool) {
+    const frag = document.createDocumentFragment();
+    frag.appendChild(document.createTextNode(n||'—'));
+    if (isDQ) {
+      const badge = document.createElement('span');
+      badge.className='dq-badge'; badge.textContent='DQ';
+      frag.appendChild(badge);
+    }
+    if (showSchool && isFirstRound && !isDQ) {
+      const school = schoolOf(n);
+      if (school) {
+        const tag = document.createElement('span');
+        tag.className='school-tag';
+        tag.textContent='('+school+')';
+        frag.appendChild(tag);
+      }
+    }
+    const medal = S.placementMedals && S.placementMedals[n];
+    if (medal) {
+      const m = document.createElement('span');
+      m.style.cssText='margin-left:5px;font-size:13px;flex-shrink:0;';
+      m.textContent = medal;
+      frag.appendChild(m);
+    }
+    return frag;
+  }
+
+  if(m.isBye){
+    if(which==='top'){
+      div.appendChild(nameNode(name, true));
+    } else {
+      div.className+=' bye-s'; div.textContent='BYE';
+    }
+    return div;
+  }
+
+  // Judge mode: only R1 unplayed slots are tappable for swaps; DQ/CLR still available on any named slot
+  const isJudgeSwappable = judgeMode && !m.ff && !m.done && !m.isBye;
+  if (judgeMode && name) {
+    if (isJudgeSwappable) div.className += ' judge-tap';
+    if (isSel) div.className += ' judge-sel';
+    if (isDQ)  div.className += ' dq-slot';
+    div.appendChild(nameNode(name, true));
+    const acts = document.createElement('div');
+    acts.className = 'judge-acts';
+    if (!isDQ) {
+      const dqBtn = document.createElement('button');
+      dqBtn.className='jbtn jbtn-dq'; dqBtn.textContent='DQ';
+      dqBtn.addEventListener('click', e=>{ e.stopPropagation(); showConfirm('Disqualify this competitor? You can undo all judge changes before locking.', ()=>judgeDQ(m.id,which)); });
+      acts.appendChild(dqBtn);
+    }
+    const clrBtn = document.createElement('button');
+    clrBtn.className='jbtn jbtn-clr'; clrBtn.textContent='CLR';
+    clrBtn.addEventListener('click', e=>{ e.stopPropagation(); showConfirm('Clear this slot? You can undo all judge changes before locking.', ()=>judgeClear(m.id,which)); });
+    acts.appendChild(clrBtn);
+    div.appendChild(acts);
+    if (isJudgeSwappable) div.addEventListener('click', ()=>judgeTapSlot(m.id, which));
+    return div;
+  }
+
+  if(m.done){
+    const isW=name===m.winner;
+    div.className+=isW?' won':' lost';
+    if(isDQ) div.className+=' dq-slot';
+    if(isW){
+      const frag=document.createDocumentFragment();
+      frag.appendChild(document.createTextNode('✓ '+name));
+      if(isDQ){ const b=document.createElement('span'); b.className='dq-badge'; b.textContent='DQ'; frag.appendChild(b); }
+      if(isFirstRound){ const school=schoolOf(name); if(school){ const t=document.createElement('span'); t.className='school-tag'; t.textContent='('+school+')'; frag.appendChild(t); }}
+      const medal = S.placementMedals && S.placementMedals[name];
+      if(medal){ const md=document.createElement('span'); md.style.cssText='margin-left:5px;font-size:13px;flex-shrink:0;'; md.textContent=medal; frag.appendChild(md); }
+      div.appendChild(frag);
+    } else {
+      div.appendChild(nameNode(name, true));
+    }
+    return div;
+  }
+
+  if(name){
+    if(isDQ) div.className+=' dq-slot';
+    if(isPlayable(m) && !judgeMode){
+      div.className+=' click';
+      div.appendChild(nameNode(name, true));
+      div.addEventListener('click',()=>openWinnerEntry(m.id, name));
+    } else {
+      div.appendChild(nameNode(name, true));
+    }
+  } else {
+    if (judgeMode && judgeSelected) {
+      div.className += ' judge-tap';
+      if (isSel) div.className += ' judge-sel';
+      div.className += ' tbd';
+      div.textContent = ff?ph(ff,dl):'—';
+      div.addEventListener('click', ()=>judgeTapSlot(m.id, which));
+    } else {
+      div.className+=' tbd';
+      div.textContent=ff?ph(ff,dl):'—';
+    }
+  }
+  return div;
+}
+
+function ph(spec, dl){
+  const [type,src]=spec.split(':');
+  const label = (dl && dl[src]) || src;
+  return type==='winner'?`W of ${label}`:`L of ${label}`;
+}
+
+// ════════════════════════════════════════════════════════
+// WINNER ENTRY — inline name confirmation
+// Accepts first name only when it's unique in the match.
+// Requires full name when both competitors share a first name.
+// ════════════════════════════════════════════════════════
+function openWinnerEntry(matchId, tappedName) {
+  const m = S.matches[matchId];
+  if (!m || !isPlayable(m)) return;
+
+  S.activeEntry = matchId;
+  S.activeWinner = tappedName; // the name that was tapped
+
+  const top = m.top, bot = m.bottom;
+  const other = tappedName === top ? bot : top;
+  const tappedFirst = tappedName.split(' ')[0];
+  const otherFirst  = other.split(' ')[0];
+  const sameFirst   = tappedFirst.toLowerCase() === otherFirst.toLowerCase();
+
+  const dl = getDisplayLabels();
+  document.getElementById('winner-modal-title').textContent =
+    `Match ${dl[matchId]||matchId} — Confirm Winner`;
+  document.getElementById('winner-modal-vs').innerHTML =
+    `Tapped: <strong>${tappedName}</strong><br>
+     <span style="color:#4a4f5a;font-size:11px;">vs ${other}</span>`;
+  document.getElementById('winner-modal-hint').textContent = sameFirst
+    ? `⚠ Same first name — type full name to confirm`
+    : `Type "${tappedFirst}" to confirm`;
+  document.getElementById('winner-modal-hint').style.color = sameFirst ? '#e53e3e' : '';
+  document.getElementById('winner-entry-error').style.display = 'none';
+  document.getElementById('winner-entry-error').textContent = '';
+
+  document.getElementById('winner-modal-bg').classList.add('open');
+  setTimeout(() => {
+    const inp = document.getElementById('winner-entry-input');
+    if (inp) { inp.value = ''; inp.focus(); }
+  }, 60);
+}
+
+function cancelWinnerEntry() {
+  S.activeEntry = null;
+  S.activeWinner = null;
+  document.getElementById('winner-modal-bg').classList.remove('open');
+  document.getElementById('winner-entry-input').value = '';
+}
+
+function confirmWinnerEntry() {
+  const matchId = S.activeEntry;
+  const expected = S.activeWinner; // the name that was tapped
+  const m = S.matches[matchId];
+  if (!m || !isPlayable(m) || !expected) return;
+
+  const inp = document.getElementById('winner-entry-input');
+  if (!inp) return;
+  const typed = inp.value.trim();
+  if (!typed) return;
+
+  const t = typed.toLowerCase();
+  const expFull  = expected.toLowerCase();
+  const expFirst = expected.split(' ')[0].toLowerCase();
+
+  const other = expected === m.top ? m.bottom : m.top;
+  const otherFirst = other.split(' ')[0].toLowerCase();
+  const sameFirst  = expFirst === otherFirst;
+
+  // If same first names, require full name
+  // If different first names, accept first OR full — but only for the tapped competitor
+  let matched = false;
+  if (sameFirst) {
+    matched = (t === expFull);
+  } else {
+    matched = (t === expFull || t === expFirst);
+  }
+
+  if (!matched) {
+    // Check if they typed the OTHER person's name — give specific error
+    const otherFull = other.toLowerCase();
+    const typedOther = (t === otherFull || (!sameFirst && t === otherFirst));
+    if (typedOther) {
+      showEntryError(`You tapped ${expected.split(' ')[0]} but typed ${other.split(' ')[0]}. Tap the correct name on the bracket.`);
+    } else {
+      showEntryError(sameFirst
+        ? `Same first name — type the full name: "${expected}"`
+        : `Type "${expected.split(' ')[0]}" to confirm.`);
+    }
+    return;
+  }
+
+  document.getElementById('winner-modal-bg').classList.remove('open');
+  document.getElementById('winner-entry-input').value = '';
+  S.activeEntry = null;
+  S.activeWinner = null;
+  selectWinner(matchId, expected);
+}
+
+function showEntryError(msg) {
+  const err = document.getElementById('winner-entry-error');
+  if (err) {
+    err.textContent = msg;
+    err.style.display = 'block';
+  }
+  const inp = document.getElementById('winner-entry-input');
+  if (inp) { inp.value = ''; inp.focus(); }
+}
+
+function line(svg,x1,y1,x2,y2,clr){
+  const el=document.createElementNS('http://www.w3.org/2000/svg','line');
+  el.setAttribute('x1',Math.round(x1));el.setAttribute('y1',Math.round(y1));
+  el.setAttribute('x2',Math.round(x2));el.setAttribute('y2',Math.round(y2));
+  el.setAttribute('stroke',clr);el.setAttribute('stroke-width','1.5');
+  svg.appendChild(el);
+}
+
+// ════════════════════════════════════════════════════════
+// THEME TOGGLE
+// ════════════════════════════════════════════════════════
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  const label = isLight ? 'Dark Mode' : 'Light Mode';
+  const b1 = document.getElementById('theme-btn');
+  const b2 = document.getElementById('theme-btn-bd');
+  if(b1) b1.textContent = label;
+  if(b2) b2.textContent = label;
+}
+
+// ════════════════════════════════════════════════════════
+// CONFIRM MODAL
+// ════════════════════════════════════════════════════════
+function showConfirm(msg, cb) {
+  confirmCallback = cb;
+  document.getElementById('confirm-msg').textContent = msg;
+  document.getElementById('confirm-modal-bg').classList.add('open');
+}
+function confirmYes() {
+  document.getElementById('confirm-modal-bg').classList.remove('open');
+  if (confirmCallback) { confirmCallback(); confirmCallback = null; }
+}
+function confirmNo() {
+  document.getElementById('confirm-modal-bg').classList.remove('open');
+  confirmCallback = null;
+}
+
+// ════════════════════════════════════════════════════════
+// CONTROLS
+// ════════════════════════════════════════════════════════
+function handleGo() {
+  if (bracketGenerated) {
+    document.getElementById('setup-outer').style.display = 'none'; document.getElementById('setup-watermark').style.display = 'none';
+    document.getElementById('bd').style.display = 'block';
+  } else {
+    buildBracket();
+  }
+}
+
+function showSetup() {
+  if (bracketGenerated && S.uiNames) {
+    buildUI(S.uiNames.length, S.uiNames, S.uiSchools);
+  }
+  // Lock random fill and size buttons while bracket is active
+  const locked = bracketGenerated;
+  document.getElementById('random-fill-btn').disabled = locked;
+  document.getElementById('random-fill-btn').style.opacity = locked ? '0.35' : '1';
+  document.getElementById('random-fill-btn').style.cursor = locked ? 'not-allowed' : 'pointer';
+  document.querySelectorAll('.qb-size').forEach(b => {
+    b.disabled = locked;
+    b.style.opacity = locked ? '0.35' : '1';
+    b.style.cursor = locked ? 'not-allowed' : 'pointer';
+  });
+  document.getElementById('setup-outer').style.display = 'flex'; document.getElementById('setup-watermark').style.display = 'block';
+  document.getElementById('bd').style.display = 'none';
+  document.getElementById('go-btn').textContent =
+    bracketGenerated ? 'Return to Bracket →' : 'Generate Bracket →';
+}
+
+function confirmReset() {
+  document.getElementById('reset-pw-input').value = '';
+  document.getElementById('reset-pw-error').style.display = 'none';
+  const bg = document.getElementById('reset-modal-bg');
+  bg.style.display = 'flex';
+  setTimeout(() => document.getElementById('reset-pw-input').focus(), 60);
+}
+function cancelResetModal() {
+  document.getElementById('reset-modal-bg').style.display = 'none';
+}
+function confirmResetPassword() {
+  const val = document.getElementById('reset-pw-input').value;
+  if (val === 'cJudge') {
+    document.getElementById('reset-modal-bg').style.display = 'none';
+    showConfirm('Reset bracket? All results will be cleared.', doReset);
+  } else {
+    document.getElementById('reset-pw-error').style.display = 'block';
+    document.getElementById('reset-pw-input').value = '';
+    document.getElementById('reset-pw-input').focus();
+  }
+}
+function doReset() {
+  bracketGenerated = false;
+  judgeMode = false;
+  judgeSelected = null;
+  dqdNames = new Set();
+  S = { n:0, names:[], schools:[], competitors:[], matches:{}, history:[], activeEntry:null, activeWinner:null };
+  document.getElementById('judge-banner').classList.remove('active');
+  document.getElementById('go-btn').textContent = 'Generate Bracket →';
+  // Re-enable random fill and size buttons
+  document.getElementById('random-fill-btn').disabled = false;
+  document.getElementById('random-fill-btn').style.opacity = '1';
+  document.getElementById('random-fill-btn').style.cursor = 'pointer';
+  document.querySelectorAll('.qb-size').forEach(b => {
+    b.disabled = false; b.style.opacity = '1'; b.style.cursor = 'pointer';
+  });
+  showSetup();
+}
+
+// ════════════════════════════════════════════════════════
+// CENTER JUDGE MODE
+// ════════════════════════════════════════════════════════
+function openJudgeModal() {
+  document.getElementById('judge-pw-input').value = '';
+  document.getElementById('judge-pw-error').style.display = 'none';
+  document.getElementById('judge-modal-bg').classList.add('open');
+  setTimeout(() => document.getElementById('judge-pw-input').focus(), 60);
+}
+function cancelJudgeModal() {
+  document.getElementById('judge-modal-bg').classList.remove('open');
+}
+function confirmJudgePassword() {
+  const val = document.getElementById('judge-pw-input').value;
+  if (val === 'cJudge') {
+    document.getElementById('judge-modal-bg').classList.remove('open');
+    enterJudgeMode();
+  } else {
+    document.getElementById('judge-pw-error').style.display = 'block';
+    document.getElementById('judge-pw-input').value = '';
+    document.getElementById('judge-pw-input').focus();
+  }
+}
+let judgeSnapshot = null;
+
+function enterJudgeMode() {
+  judgeMode = true;
+  judgeSelected = null;
+  // Snapshot full state so Undo All can restore it
+  judgeSnapshot = {
+    matches: JSON.parse(JSON.stringify(S.matches)),
+    dqdNames: new Set(dqdNames)
+  };
+  document.getElementById('judge-banner').classList.add('active');
+  render();
+}
+
+function judgeUndoAll() {
+  if (!judgeSnapshot) return;
+  showConfirm('Undo all judge changes and restore bracket to when you entered judge mode?', () => {
+    S.matches = JSON.parse(JSON.stringify(judgeSnapshot.matches));
+    dqdNames = new Set(judgeSnapshot.dqdNames);
+    judgeSelected = null;
+    render();
+  });
+}
+function exitJudgeModePrompt() {
+  showConfirm('Exit Center Judge Mode? All manual changes will be locked in.', exitJudgeMode);
+}
+function exitJudgeMode() {
+  judgeMode = false;
+  judgeSelected = null;
+  judgeSnapshot = null;
+  document.getElementById('judge-banner').classList.remove('active');
+  render();
+}
+
+// Tap a slot in judge mode — select it, or swap with already-selected
+// Only allows swaps within unplayed R1 matches (no ff, not done)
+function judgeTapSlot(matchId, which) {
+  if (!judgeMode) return;
+  const m = S.matches[matchId];
+  // Only allow interaction with R1 slots (no ff) that haven't been played
+  if (!m || m.ff || m.done || m.isBye) return;
+
+  if (!judgeSelected) {
+    judgeSelected = { matchId, which };
+    render();
+    return;
+  }
+  if (judgeSelected.matchId === matchId && judgeSelected.which === which) {
+    judgeSelected = null; render(); return;
+  }
+  // Verify the target is also an unplayed R1 slot
+  const targetM = S.matches[matchId];
+  if (!targetM || targetM.ff || targetM.done || targetM.isBye) {
+    judgeSelected = null; render(); return;
+  }
+  // Swap the two names globally
+  const selM = S.matches[judgeSelected.matchId];
+  const nameA = judgeSelected.which === 'top' ? selM.top : selM.bottom;
+  const nameB = which === 'top' ? m.top : m.bottom;
+  if (nameA || nameB) judgeSwapGlobal(nameA, nameB, judgeSelected.matchId,
+    judgeSelected.which, matchId, which);
+  judgeSelected = null;
+  render();
+}
+
+function judgeSwapGlobal(nameA, nameB, midA, whichA, midB, whichB) {
+  // Swap everywhere nameA and nameB appear
+  Object.values(S.matches).forEach(m => {
+    if (m.top === nameA) m.top = nameB || null;
+    else if (m.top === nameB) m.top = nameA || null;
+    if (m.bottom === nameA) m.bottom = nameB || null;
+    else if (m.bottom === nameB) m.bottom = nameA || null;
+    if (m.winner === nameA) m.winner = nameB;
+    else if (m.winner === nameB) m.winner = nameA;
+    if (m.loser === nameA) m.loser = nameB;
+    else if (m.loser === nameB) m.loser = nameA;
+  });
+  // Handle null slots (moving into empty)
+  if (!nameA) { const mB=S.matches[midB]; if(whichB==='top') mB.top=null; else mB.bottom=null; }
+  if (!nameB) { const mA=S.matches[midA]; if(whichA==='top') mA.top=null; else mA.bottom=null; }
+  // Swap DQ status
+  const aDQ=dqdNames.has(nameA), bDQ=dqdNames.has(nameB);
+  if(nameA){ if(aDQ){dqdNames.delete(nameA);dqdNames.add(nameB);}
+             else if(bDQ){dqdNames.delete(nameB);dqdNames.add(nameA);} }
+}
+
+function depropagateFrom(matchId) {
+  Object.values(S.matches).forEach(other => {
+    if (!other.ff || other.id === matchId) return;
+    ['t','b'].forEach((slot, si) => {
+      const spec = other.ff[slot];
+      if (!spec) return;
+      const [,srcId] = spec.split(':');
+      if (srcId !== matchId) return;
+      if (si === 0) other.top = null; else other.bottom = null;
+      if (other.done) {
+        depropagateFrom(other.id);
+        other.done = false; other.winner = null; other.loser = null;
+      }
+    });
+  });
+}
+
+function judgeClear(matchId, which) {
+  const m = S.matches[matchId];
+  if (!m) return;
+  if (m.done) {
+    depropagateFrom(matchId);
+    m.done = false; m.winner = null; m.loser = null;
+  }
+  if (which === 'top') m.top = null; else m.bottom = null;
+  judgeSelected = null;
+  render();
+}
+
+function judgeDQ(matchId, which) {
+  const m = S.matches[matchId];
+  if (!m) return;
+  const name = which === 'top' ? m.top : m.bottom;
+  if (!name) return;
+  dqdNames.add(name);
+  if (isPlayable(m)) {
+    const opp = which === 'top' ? m.bottom : m.top;
+    if (opp) { judgeSelected = null; selectWinner(matchId, opp); return; }
+  }
+  judgeSelected = null;
+  render();
+}
+
+// ════════════════════════════════════════════════════════
+// SETUP UI
+// ════════════════════════════════════════════════════════
+const NAME_POOL = [
+  'Marcus Webb','Leila Farrow','Devon Okafor','Priya Nair',
+  'Caleb Tran','Simone Adler','Rafi Morales','Juno Park',
+  'Eli Sutton','Keisha Banks','Theo Lindqvist','Amara Diallo',
+  'Caden Rush','Zara Petrov','Nolan Hesse','Britta Yuen',
+  'Omar Castillo','Ivy Delacroix','Sawyer Moon','Phoebe Aiken',
+  'Jace Obi','Luna Ferreira','Axel Strand','Mira Hollis'
+];
+const SCHOOLS = ['BaresTKD','DVMA',"Strickland's",'Freedom','Reveal','Synergy'];
+
+let currentSize = 6;
+let formsMode = false;
+
+function toggleFormsMode() {
+  formsMode = !formsMode;
+  const btn = document.getElementById('forms-toggle-btn');
+  const hint = document.getElementById('forms-hint');
+  const always = document.getElementById('always-hint');
+  if (formsMode) {
+    btn.classList.add('active');
+    btn.textContent = 'Forms Mode: On';
+    hint.style.display = 'block';
+    always.style.display = 'none';
+  } else {
+    btn.classList.remove('active');
+    btn.textContent = 'Forms Mode: Off';
+    hint.style.display = 'none';
+    always.style.display = 'block';
+  }
+  const rows = document.querySelectorAll('.comp-row');
+  const existing = [];
+  rows.forEach(r => {
+    const inputs = r.querySelectorAll('input');
+    existing.push({ name: inputs[0].value, school: inputs[1]?inputs[1].value:'' });
+  });
+  buildUI(existing.length, existing.map(e=>e.name), existing.map(e=>e.school));
+}
+
+function setSize(n) {
+  currentSize = n;
+  document.querySelectorAll('.qb-size').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('forms-toggle-btn').classList.toggle('active', formsMode);
+  const rows = document.querySelectorAll('.comp-row');
+  const existing = [];
+  rows.forEach(r => {
+    const inputs = r.querySelectorAll('input');
+    existing.push({ name: inputs[0].value, school: inputs[1]?inputs[1].value:'' });
+  });
+  buildUI(n, existing.map(e=>e.name), existing.map(e=>e.school));
+}
+
+function randomFill() {
+  const pool = [...NAME_POOL].sort(() => Math.random() - 0.5);
+  const names = pool.slice(0, currentSize);
+  const schools = Array.from({length: currentSize}, () => SCHOOLS[Math.floor(Math.random() * SCHOOLS.length)]);
+  buildUI(currentSize, names, schools);
+}
+
+function buildUI(n, names=[], schools=[]) {
+  const el = document.getElementById('comp-list');
+  if (formsMode) el.classList.add('forms-mode'); else el.classList.remove('forms-mode');
+  el.innerHTML = '';
+  const medals = ['🥇','🥈','🥉'];
+  for (let i = 0; i < n; i++) {
+    const numLabel = formsMode && i < 3 ? medals[i] : (i + 1);
+    const isMedal  = formsMode && i < 3;
+    const placeholders = ['Forms 1st place','Forms 2nd place','Forms 3rd place'];
+    const ph = formsMode ? (placeholders[i] || `Forms ${i+1}th place`) : `Competitor ${i+1}`;
+    const row = document.createElement('div');
+    row.className = 'comp-row';
+    row.innerHTML = `<div class="comp-num" style="${isMedal?'font-size:13px;':''}">${numLabel}</div>
+      <input type="text" placeholder="${ph}" value="${names[i]||''}">
+      <input class="comp-school" type="text" placeholder="School" value="${schools[i]||''}">
+      <button class="sbtn" onclick="toggleScratch(this)">✕</button>`;
+    el.appendChild(row);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// SAME-SCHOOL R1 AVOIDANCE
+// Rearranges seed positions to avoid same-school R1 matchups.
+// Tries swapping conflicting competitors with others until
+// no R1 pair shares a school, or no valid swap exists.
+// ════════════════════════════════════════════════════════
+const R1_PAIRS = {
+  2:[[1,2]],
+  3:[[2,3]],
+  4:[[1,4],[2,3]],
+  5:[[4,5]],
+  6:[[4,5],[3,6]],
+  7:[[4,5],[2,7],[3,6]],
+  8:[[1,8],[4,5],[2,7],[3,6]]
+};
+
+// Bye seeds per bracket size (1-indexed seed numbers that receive byes)
+const BYE_SEEDS = { 2:[], 3:[1], 4:[], 5:[1,2,3], 6:[1,2], 7:[1], 8:[] };
+
+function avoidSameSchoolR1(names, schools, n, protectedSeeds=[]) {
+  const pairs = R1_PAIRS[n];
+  if (!pairs) return { names:[...names], schools:[...schools] };
+
+  const ns = [...names];
+  const sc = [...schools];
+  // Convert protected 1-indexed seeds to 0-indexed positions
+  const locked = new Set(protectedSeeds.map(s => s-1));
+
+  function conflictExists() {
+    return pairs.some(([s1,s2]) => {
+      const i=s1-1, j=s2-1;
+      return j>=0 && j<n && sc[i] && sc[j] && sc[i]===sc[j];
+    });
+  }
+
+  for (let pass = 0; pass < n*3 && conflictExists(); pass++) {
+    for (const [s1,s2] of pairs) {
+      const i=s1-1, j=s2-1;
+      if (j<0||j>=n||!sc[i]||!sc[j]||sc[i]!==sc[j]) continue;
+      // Try swapping j first (skip if locked)
+      let resolved = false;
+      if (!locked.has(j)) {
+        for (let k=0; k<n && !resolved; k++) {
+          if (k===i||k===j||locked.has(k)) continue;
+          [ns[j],ns[k]]=[ns[k],ns[j]];
+          [sc[j],sc[k]]=[sc[k],sc[j]];
+          if (!conflictExists()) { resolved=true; break; }
+          [ns[j],ns[k]]=[ns[k],ns[j]];
+          [sc[j],sc[k]]=[sc[k],sc[j]];
+        }
+      }
+      // Try swapping i if j swap didn't work (skip if locked)
+      if (!resolved && !locked.has(i)) {
+        for (let k=0; k<n; k++) {
+          if (k===i||k===j||locked.has(k)) continue;
+          [ns[i],ns[k]]=[ns[k],ns[i]];
+          [sc[i],sc[k]]=[sc[k],sc[i]];
+          if (!conflictExists()) break;
+          [ns[i],ns[k]]=[ns[k],ns[i]];
+          [sc[i],sc[k]]=[sc[k],sc[i]];
+        }
+      }
+    }
+  }
+
+  return { names:ns, schools:sc };
+}
+
+function toggleScratch(btn){
+  const row=btn.closest('.comp-row');
+  row.classList.toggle('scratched');
+  btn.classList.toggle('scratched');
+}
+
+function buildBracket(){
+  const rows=document.querySelectorAll('.comp-row');
+  let active=[];
+  let uiNames=[], uiSchools=[];
+  rows.forEach(row=>{
+    if(!row.classList.contains('scratched')){
+      const inputs=row.querySelectorAll('input');
+      const v=inputs[0].value.trim();
+      const school=inputs[1]?inputs[1].value.trim():'';
+      uiNames.push(v); uiSchools.push(school);
+      if(v) active.push({name:v, school});
+    }
+  });
+
+  // Forms mode: entry order is placement (1st→best). Reverse so last place → seed 1 → gets bye.
+  if(formsMode) active.reverse();
+
+  let names=active.map(c=>c.name);
+  let activeSchools=active.map(c=>c.school);
+  const n=names.length;
+  if(n<2){alert('Need at least 2 competitors.');return;}
+  if(n>8){alert('Prototype supports 2–8.');return;}
+  if(!T[n]){alert(`No template for ${n}.`);return;}
+
+  // Apply same-school R1 avoidance.
+  const protectedSeeds = formsMode ? (BYE_SEEDS[n] || []) : [];
+  const avoided = avoidSameSchoolR1(names, activeSchools, n, protectedSeeds);
+  names = avoided.names;
+  activeSchools = avoided.schools;
+
+  dqdNames = new Set();
+  judgeMode = false;
+  judgeSelected = null;
+  document.getElementById('judge-banner').classList.remove('active');
+
+  S={n,names,schools:activeSchools,
+     competitors:active.map(c=>({name:c.name,school:c.school})),
+     uiNames, uiSchools,
+     matches:{},history:[],activeEntry:null,activeWinner:null};
+  S.matches=initMatches(n,names);
+  autoAdvanceByes(S.matches);
+
+  bracketGenerated = true;
+  document.getElementById('go-btn').textContent = 'Return to Bracket →';
+  document.getElementById('setup-outer').style.display='none'; document.getElementById('setup-watermark').style.display='none';
+  document.getElementById('bd').style.display='block';
+  render();
+}
+
+// Init — start with 6 empty slots
+buildUI(6);
+
+// Modal keyboard and backdrop handlers
+document.getElementById('winner-entry-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') confirmWinnerEntry();
+  if (e.key === 'Escape') cancelWinnerEntry();
+});
+document.getElementById('winner-modal-bg').addEventListener('click', e => {
+  if (e.target === document.getElementById('winner-modal-bg')) cancelWinnerEntry();
+});
+document.getElementById('judge-pw-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') confirmJudgePassword();
+  if (e.key === 'Escape') cancelJudgeModal();
+});
+document.getElementById('judge-modal-bg').addEventListener('click', e => {
+  if (e.target === document.getElementById('judge-modal-bg')) cancelJudgeModal();
+});
+document.getElementById('reset-pw-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') confirmResetPassword();
+  if (e.key === 'Escape') cancelResetModal();
+});
+document.getElementById('confirm-modal-bg').addEventListener('click', e => {
+  if (e.target === document.getElementById('confirm-modal-bg')) confirmNo();
+});
+</script>
+</body>
+</html>
